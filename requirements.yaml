@@ -1,0 +1,26 @@
+name: ml_env 
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - h5py
+  - dask
+  - hdf5
+  - matplotlib
+  - numpy
+  - pandas
+  - patsy
+  - pillow
+  - pip
+  - python=3.10
+  - scikit-learn
+  - scipy
+  - six
+  - statsmodels
+  - zarr
+  - pytables
+  - xgboost
+  - pip:
+      - ipython
