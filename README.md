@@ -6,7 +6,7 @@ Machine learning pipeline investigating whether supervised ML models (logistic r
 
 This repository accompanies thesis work on epistasis detection in Alzheimer's disease (AD) using machine learning. Two complementary data sources are used:
 
-1. **Simulated genotype data** (`scripts/02_imulations/`) — reproducing a previously reported APOE–DAB1 interaction under controlled conditions, based on effect sizes from Bracher-Smith et al. (2022).
+1. **Simulated genotype data** (`scripts/02_imulations/`) — reproducing a previously reported APOE–DAB1 interaction under controlled conditions, based on effect sizes from the UKBB dataset.
 2. **Real genotype data from the BDR cohort** (`scripts/03_BDR_analysis/`) — a panel of 81 genome-wide significant AD-associated SNPs, used to classify AD vs. controls, AD vs. vascular dementia (VD), and AD vs. Lewy body dementia (LBD).
 
 Three modelling approaches are compared across both data sources:
