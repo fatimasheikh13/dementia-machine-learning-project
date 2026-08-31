@@ -1,6 +1,6 @@
 # Dementia ML Epistasis
 
-Machine learning pipeline investigating whether supervised ML models (logistic regression, XGBoost, neural networks) can detect epistatic interactions between AD-associated genetic variants (notably APOE and DAB1) and improve discrimination between dementia subtypes (AD, vascular dementia, Lewy body dementia) using genotype data from the Brains for Dementia Research (BDR) cohort and simulated data based on UK Biobank (UKBB) effect sizes.
+Machine learning pipeline investigating whether supervised ML models (logistic regression, XGBoost, neural networks) can detect epistatic interactions between Alzheimer's-associated genetic variants (notably APOE and DAB1) and improve discrimination between dementia subtypes (Alzheimer's, vascular dementia, Lewy body dementia) using genotype data from the Brains for Dementia Research (BDR) cohort and simulated data based on UK Biobank (UKBB) effect sizes.
 
 ## Project overview
 
@@ -33,29 +33,29 @@ scripts/
     └── results_vis.ipynb
 ```
 
-### 1. `preprocessing/`
+### 1. `01_preprocessing/`
 
 Prepares genotype and phenotype data from the BDR cohort for downstream modelling. Run before any analysis or simulation scripts.
 
 | Script | Purpose |
 |---|---|
-| `AD_snps_BDR.sh` | Extracts the AD-associated SNP panel from BDR genotype files (AD vs. controls) via PLINK. |
-| `apoe_dab1_BDR.sh` | Extracts APOE and DAB1 SNPs from BDR genotype files via PLINK. |
-| `VD_LBD_BDR.sh` | Extracts the AD-associated SNP panel for the AD vs. VD and AD vs. LBD comparisons. |
-| `apoe_encoding.ipynb` | Derives APOE genotypes (ε2/ε3/ε4 combinations) from rs429358/rs7412 dosages and computes the ε4 allele-count feature used in modelling. |
-| `beta_coeff_prs.ipynb` | Calculates polygenic risk score (PRS) beta coefficients used to construct the PRS datasets. |
+| `01_extract_apoe_dab1.sh` | Filters the raw BDR genotype file down to AD/control samples, updates the .fam file with sex and diagnosis, then extracts the APOE and DAB1 SNPs via PLINK. Outputs allele frequencies and an additive-dosage (.raw) file for ML |
+| `02_extract_AD_snps.sh` | Extracts the 81-SNP AD-associated panel from the BDR dataset built in step 1, applies a MAF ≥ 0.05 filter, computes allele frequencies, generates an additive-dosage `(.raw)` file for ML, computes a PRS from provided SNP weights, and runs genome-wide LD pruning + PCA (10 PCs) for later population-stratification adjustment. |
+| `03_extract_vd_lbd_snps.sh` | Independently builds AD-vs-VD and AD-vs-LBD sample subsets directly from the raw BDR dataset, then repeats the same extraction pipeline as step 2 (SNP extraction, MAF filtering, allele frequencies, ML dosage recoding, LD pruning, PCA) for each pair. |
+| `04_encode_apoe_genotypes.ipynb` | Derives APOE genotypes (ε2/ε3/ε4 combinations) from rs429358/rs7412 dosages and computes the ε4 allele-count feature used in modelling. |
+| `05_compute_prs_betas.ipynb` | Calculates polygenic risk score (PRS) beta coefficients from the training data, used to construct the PRS dataset alongside the Kunkle et al.-derived version generated in step 2. |
 
-### 2. `Simulations/`
+### 2. `02_Simulations/`
 
 Generates and models the simulated APOE–DAB1 dataset, used to test whether ML models can recover a known, previously reported interaction under controlled conditions.
 
 | Script | Purpose |
 |---|---|
-| `simulation_UKBB.ipynb` | Generates the simulated dataset using established APOE ε4 and DAB1 effect sizes (Bracher-Smith et al. 2022) and runs logistic regression model on the simulated dataset. |
+| `simulation_UKBB.ipynb` | Generates the simulated dataset using established APOE ε4 and DAB1 effect sizes from the UKBB dataset and runs logistic regression model on the simulated dataset. |
 | `neural_networks_simulations.py` | Trains and evaluates a feedforward neural network on the simulated APOE–DAB1 dataset. |
 
 
-### 3. `analysis/AD_APOE_DAB1/`
+### 3. `03_analysis/AD_APOE_DAB1/`
 
 APOE–DAB1 interaction modelling in the real BDR cohort (AD vs. controls), evaluating four specifications: APOE alone, DAB1 alone, APOE + DAB1 additive, and APOE + DAB1 + interaction term.
 
@@ -65,7 +65,7 @@ APOE–DAB1 interaction modelling in the real BDR cohort (AD vs. controls), eval
 | `nn_AD_APOE_DAB1.py` / `.sbatch` | Neural network model and SLURM submission script. |
 | `xgboost_AD_APOE_DAB1.py` / `.sbatch` | XGBoost model and SLURM submission script. |
 
-### 4. `analysis/AD_control_snps/`
+### 4. `03_analysis/AD_control_snps/`
 
 AD-associated SNP panel modelling: AD vs. controls. The most extensively developed comparison, including PRS-based classification and pairwise interaction analysis.
 
@@ -77,7 +77,7 @@ AD-associated SNP panel modelling: AD vs. controls. The most extensively develop
 | `xgboost_snps.py` / `.sbatch` | XGBoost model on the SNP panel. |
 | `pairwise_interaction.ipynb` | SHAP interaction value analysis — ranks pairwise SNP interactions across repetitions. |
 
-### 5. `analysis/AD_LBD_snps/`
+### 5. `03_analysis/AD_LBD_snps/`
 
 AD-associated SNP panel modelling: AD vs. Lewy body dementia (LBD).
 
@@ -87,7 +87,7 @@ AD-associated SNP panel modelling: AD vs. Lewy body dementia (LBD).
 | `nn_snps.py` / `.sbatch` | Neural network classifier. |
 | `xgboost_snps.py` / `.sbatch` | XGBoost classifier. |
 
-### 6. `analysis/AD_VAD_snps/`
+### 6. `03_analysis/AD_VAD_snps/`
 
 AD-associated SNP panel modelling: AD vs. vascular dementia (VD).
 
@@ -97,20 +97,20 @@ AD-associated SNP panel modelling: AD vs. vascular dementia (VD).
 | `nn_snps.py` / `.sbatch` | Neural network classifier. |
 | `xgboost_snps.py` / `.sbatch` | XGBoost classifier. |
 
-### 7. Results visualisation (`analysis/`)
+### 7. Results visualisation (`04_visualisation/`)
 
 Run after all modelling scripts to summarise and visualise results.
 
 | Script | Purpose |
 |---|---|
 | `PC_vis_AD_VD_LBD.ipynb` | Visualises principal components used for post-hoc population stratification adjustment across the AD vs. VD/LBD datasets. |
-| `results_vis.ipynb` | Compiles and visualises final performance metrics (AUC) and SHAP results across all models and datasets. |
+| `results_vis.ipynb` | Compiles and visualises final performance metrics (AUC) results across all models and datasets. |
 
 ## File-type key
 
 - `.py` — standalone Python script, typically submitted to the HPC cluster via a matching `.sbatch` file
 - `.sbatch` — SLURM job submission script (Cardiff ARCCA HPC), paired with a `.py` script of the same name
-- `.ipynb` — Jupyter notebook, run interactively or converted to script form
+- `.ipynb` — Jupyter notebook, run interactively.
 
 ## Environment
 
