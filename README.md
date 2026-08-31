@@ -6,8 +6,8 @@ Machine learning pipeline investigating whether supervised ML models (logistic r
 
 This repository accompanies thesis work on epistasis detection in Alzheimer's disease (AD) using machine learning. Two complementary data sources are used:
 
-1. **Simulated genotype data** (`scripts/Simulations/`) — reproducing a previously reported APOE–DAB1 interaction under controlled conditions, based on effect sizes from Bracher-Smith et al. (2022).
-2. **Real genotype data from the BDR cohort** (`scripts/analysis/`) — a panel of 81 genome-wide significant AD-associated SNPs, used to classify AD vs. controls, AD vs. vascular dementia (VD), and AD vs. Lewy body dementia (LBD).
+1. **Simulated genotype data** (`scripts/02_imulations/`) — reproducing a previously reported APOE–DAB1 interaction under controlled conditions, based on effect sizes from Bracher-Smith et al. (2022).
+2. **Real genotype data from the BDR cohort** (`scripts/03_BDR_analysis/`) — a panel of 81 genome-wide significant AD-associated SNPs, used to classify AD vs. controls, AD vs. vascular dementia (VD), and AD vs. Lewy body dementia (LBD).
 
 Three modelling approaches are compared across both data sources:
 - **Logistic regression** (unpenalised, `sklearn`)
@@ -22,15 +22,16 @@ Scripts are intended to be run in the following order: **preprocessing → simul
 
 ```
 scripts/
-├── preprocessing/
-├── Simulations/
-└── analysis/
+├── 01_preprocessing/
+├── 02_simulations/
+└── 03_BDR_analysis/
     ├── AD_APOE_DAB1/
     ├── AD_control_snps/
     ├── AD_LBD_snps/
     ├── AD_VAD_snps/
+└── 04_visualisations\
     ├── PC_vis_AD_VD_LBD.ipynb
-    └── results_vis.ipynb
+    ├── results_vis.ipynb
 ```
 
 ### 1. `01_preprocessing/`
@@ -55,7 +56,7 @@ Generates and models the simulated APOE–DAB1 dataset, used to test whether ML 
 | `neural_networks_simulations.py` | Trains and evaluates a feedforward neural network on the simulated APOE–DAB1 dataset. |
 
 
-### 3. `03_analysis/AD_APOE_DAB1/`
+### 3. `03_BDR_analysis/AD_APOE_DAB1/`
 
 APOE–DAB1 interaction modelling in the real BDR cohort (AD vs. controls), evaluating four specifications: APOE alone, DAB1 alone, APOE + DAB1 additive, and APOE + DAB1 + interaction term.
 
@@ -65,7 +66,7 @@ APOE–DAB1 interaction modelling in the real BDR cohort (AD vs. controls), eval
 | `nn_AD_APOE_DAB1.py` / `.sbatch` | Neural network model and SLURM submission script. |
 | `xgboost_AD_APOE_DAB1.py` / `.sbatch` | XGBoost model and SLURM submission script. |
 
-### 4. `03_analysis/AD_control_snps/`
+### 4. `03_BDR_analysis/AD_control_snps/`
 
 AD-associated SNP panel modelling: AD vs. controls. The most extensively developed comparison, including PRS-based classification and pairwise interaction analysis.
 
@@ -77,7 +78,7 @@ AD-associated SNP panel modelling: AD vs. controls. The most extensively develop
 | `xgboost_snps.py` / `.sbatch` | XGBoost model on the SNP panel. |
 | `pairwise_interaction.ipynb` | SHAP interaction value analysis — ranks pairwise SNP interactions across repetitions. |
 
-### 5. `03_analysis/AD_LBD_snps/`
+### 5. `03_BDR_analysis/AD_LBD_snps/`
 
 AD-associated SNP panel modelling: AD vs. Lewy body dementia (LBD).
 
@@ -87,7 +88,7 @@ AD-associated SNP panel modelling: AD vs. Lewy body dementia (LBD).
 | `nn_snps.py` / `.sbatch` | Neural network classifier. |
 | `xgboost_snps.py` / `.sbatch` | XGBoost classifier. |
 
-### 6. `03_analysis/AD_VAD_snps/`
+### 6. `03_BDR_analysis/AD_VAD_snps/`
 
 AD-associated SNP panel modelling: AD vs. vascular dementia (VD).
 
